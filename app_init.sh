@@ -11,5 +11,9 @@ cd /system/init/driver && insmod sinfo.ko
 
 cd /system/init/driver && insmod tx-isp.ko
 
+sleep 1
+mount -t jffs2 /dev/mtdblock4 /opt
+sleep 3
 
+export LD_LIBRARY_PATH=/mnt/ukit_em/t20_demo/run:/system/lib
 
