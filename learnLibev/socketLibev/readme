@@ -1,0 +1,6 @@
+测试socket，libev
+g++ -o server server.cpp -lev
+
+g++ -o client client.cpp
+
+
