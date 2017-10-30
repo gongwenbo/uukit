@@ -1,0 +1,13 @@
+install libuv:
+
+1yum install automake
+2yum install libtool
+3 download sorce:
+https://github.com/libuv/libuv
+ install :
+	sh autogen.sh
+	./configure
+	make
+	make check
+	make install
+ok!!!

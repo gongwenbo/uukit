@@ -1,0 +1,5 @@
+这是一个消息队列库：
+1 make  编译 libnmosal.so
+2 install library:
+ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:your library path/demo/nmOsal 
+3 include "..." 就可以调用库函数了

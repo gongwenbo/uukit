@@ -1,0 +1,11 @@
+1 install hiredislib :
+tar -zxvf redis-2.8.7.tar.gz  
+    cd redis-2.8.7  
+    sudo apt-get install tcl(redis测试程序需要tcl版本至少为8.5)  
+    make 32bit(64位系统直接使用make即可)  
+    sudo make install(将编译生成的可执行文件拷贝到/usr/local/bin目录下)  
+    make test(用于确认安装正确与否)  
+	
+2 g++ -o test test.cpp -lhiredis
+
+3 channel:http://hahaya.github.io/operator-redis-under-linux/
