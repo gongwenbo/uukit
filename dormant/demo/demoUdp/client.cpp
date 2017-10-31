@@ -10,14 +10,14 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h> 
-#include<iostream>
+
 #define BUFSIZE 1024
-using namespace std;
+
 /* 
  * error - wrapper for perror
  */
-void error(string msg) {
-    perror((char*)&msg);
+void error(char *msg) {
+    perror(msg);
     exit(0);
 }
 
@@ -55,29 +55,28 @@ int main(int argc, char **argv) {
     bcopy((char *)server->h_addr, 
 	  (char *)&serveraddr.sin_addr.s_addr, server->h_length);
     serveraddr.sin_port = htons(portno);
-	
-	while(1){
+
     /* get a message from the user */
+	for(int i=1000;i>0;i--){
     bzero(buf, BUFSIZE);
-    printf("Please enter msg: \n");
-//    fgets(buf, BUFSIZE, stdin);
-	snprintf(buf,sizeof(buf),"get run");
+    printf("Please enter msg: ");
+    fgets(buf, BUFSIZE, stdin);
+
     /* send the message to the server */
+	
     serverlen = sizeof(serveraddr);
-	sleep(1);
-    n = sendto(sockfd, buf, strlen(buf), 0, (const struct sockaddr *)&serveraddr, serverlen);
+    n = sendto(sockfd, buf, strlen(buf), 0, (struct sockaddr *)&serveraddr, serverlen);
+	
     if (n < 0) 
       error("ERROR in sendto");
+	sleep(1);
     
-    
-	/* print the server's reply */
-    
-	n = recvfrom(sockfd, buf, strlen(buf), 0, (struct sockaddr *)&serveraddr, &serverlen);
+    /* print the server's reply */
+    n = recvfrom(sockfd, buf, strlen(buf), 0, (struct sockaddr *)&serveraddr, &serverlen);
     if (n < 0) 
       error("ERROR in recvfrom");
     printf("Echo from server: %s", buf);
-    
+	sleep(1);
 	}
-	
-	return 0;
+    return 0;
 }

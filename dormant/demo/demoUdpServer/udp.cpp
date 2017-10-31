@@ -45,26 +45,48 @@ void alloc_buffer(uv_handle_t *handle, size_t suggested_size, uv_buf_t *buf) {
 		buf->len = suggested_size;
 		
 }
+
+static void on_send(uv_udp_send_t* req, int status) 
+{   
+    free(req);
+    if (status) {
+        fprintf(stderr, "uv_udp_send_cb error: %s\n", uv_strerror(status));
+    }
+}
+
 	
 void writeRedis(uv_udp_t *req, ssize_t nread, const uv_buf_t* buf, 
     const struct sockaddr *addr, unsigned flags) 
 {
 	
-	if (nread == -1) {
+	if (nread <1) {
 		fprintf(stderr, "Read error!\n");
-		uv_close((uv_handle_t*) req, NULL);
+		//uv_close((uv_handle_t*) req, NULL);
 		free(buf->base);
-    
+		return ;
 	}
 		
-	if(nread<1)return ;
-	uv_rwlock_wrlock(&numlock);
-	strcpy(_MSGsend._MSG,buf->base);
-	if(0 != q_vsend(m_hQueue,&_MSGsend,sizeof(MSG)) )
-		cout<<"q_vsend error!"<<endl;
-	cout<<"send data:"<<_MSGsend._MSG<<endl;
-	uv_rwlock_wrunlock(&numlock);
-	
+    else{
+		
+		uv_rwlock_wrlock(&numlock);
+		strcpy(_MSGsend._MSG,buf->base);
+		uv_rwlock_wrunlock(&numlock);
+		
+		if(0 != q_vsend(m_hQueue,&_MSGsend,sizeof(MSG)) )
+			cout<<"q_vsend error!"<<endl;
+		cout<<"send data:"<<_MSGsend._MSG<<endl;
+		
+		char _data[50];
+		sprintf(_data,"%s",_MSGsend._MSG);
+						
+		uv_udp_send_t* _req = (uv_udp_send_t*)malloc(sizeof(uv_udp_send_t));
+		uv_buf_t _buf = uv_buf_init(_data, sizeof(_data));
+        int r = uv_udp_send(_req, req, &_buf, 1, addr, on_send);
+		if (r) {
+			fprintf(stderr, "uv_udp_send error: %s\n", uv_strerror(r));
+		}
+        
+    }
 	
 };
 
