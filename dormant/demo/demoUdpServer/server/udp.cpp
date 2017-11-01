@@ -14,8 +14,8 @@
 #include "../../nmOsal/src/nmOsalQueue.h"
 #include "../../nmOsal/inc/nmOsal.h"
 #include "../../nmOsal/inc/nmOsalType.h"
-
-#define TEXT_SZ 100
+int NUM=0;
+using namespace std;
 typedef struct Msg{
 	int id;
 	char _MSG[50];
@@ -24,25 +24,32 @@ typedef struct Msg{
 
 uv_barrier_t blocker;
 uv_rwlock_t numlock;
-void testRedis(void *Argv);
-using namespace std;
+
+
 redisContext *pRedisContext;
 uv_loop_t *loop;
 uv_udp_t recv_socket;
 
+
 static uv_sem_t sem_main;
 static uv_sem_t protectQUe;
 
-//init message 
-	unsigned long maxMsgs=5;
-	unsigned long ulRet = 0;
-	unsigned long m_hQueue;
-	unsigned long ulLen=0;
-	unsigned long ulResp = 0;
-	MSG _MSGsend,_MSGrecieve;
+// message paramter 
+unsigned long maxMsgs=5;
+unsigned long ulRet = 0;
+unsigned long m_hQueue;
+unsigned long ulLen=0;
+unsigned long ulResp = 0;
+MSG _MSGsend,_MSGrecieve;
 	
 
-char *BUFFER=new char(50);   
+char *BUFFER=new char(50);  
+
+
+void testRedis(void *Argv);
+void worite_queu(uv_work_t *req);
+void after(uv_work_t *req, int status);
+
 void alloc_buffer(uv_handle_t *handle, size_t suggested_size, uv_buf_t *buf) {
 		buf->base = (char*) malloc(suggested_size);
 		buf->len = suggested_size;
@@ -71,14 +78,16 @@ void writeRedis(uv_udp_t *req, ssize_t nread, const uv_buf_t* buf,
 		
     else{
 		
-
-		strcpy(_MSGsend._MSG,buf->base);
-
-		//uv_rwlock_rdlock(&numlock);
-		if(0 != q_vsend(m_hQueue,&_MSGsend,sizeof(MSG)) )
-			cout<<"q_vsend error!"<<endl;
-		//uv_rwlock_rdunlock(&numlock);
-		cout<<"send data:"<<_MSGsend._MSG<<endl;
+		uv_work_t *workReq=(uv_work_t*)malloc(sizeof(uv_work_t));
+		char temp[50]; //global variable
+		//uv_rwlock_wrlock(&numlock);
+		strcpy(temp,buf->base);															
+		workReq->data=(void*)temp;		
+		//uv_rwlock_wrunlock(&numlock);
+		cout<<"workReq.data:"<<(char*)workReq->data<<endl;
+		
+		uv_queue_work(loop, workReq, worite_queu, after);
+		
 		//uv_sem_wait(&protectQUe);
 		//sleep(1);
 		/*char _data[50];
@@ -94,7 +103,7 @@ void writeRedis(uv_udp_t *req, ssize_t nread, const uv_buf_t* buf,
 		sleep(1);
     }
 	
-};
+}
 
 void testRedis(void *Argv)
 {
@@ -102,19 +111,21 @@ void testRedis(void *Argv)
 	char *buffer=(char*)Argv;
 	
     char COMD[50];
-	for(int i=1000;i>0;i--){
+	while(1){
 
 		memset(COMD,0,sizeof(COMD));
 		//uv_rwlock_rdlock(&numlock);
-		ulResp = q_vreceive(m_hQueue,1,0,&_MSGrecieve,sizeof(_MSGrecieve),&ulLen);
+		ulResp = q_vreceive(m_hQueue,0,0,&_MSGrecieve,sizeof(_MSGrecieve),&ulLen);
 		//uv_rwlock_rdunlock(&numlock);
-		//uv_sem_post(&protectQUe);
+		uv_sem_post(&protectQUe);
+		sleep(1);
 		if(ulResp!=0){
 			cout<<"q_vreceiveERROR!!"<<endl;
-			return ;
+			//return ;
+			continue;
 		}				
 		
-		snprintf(COMD,sizeof(COMD),"%s",_MSGrecieve._MSG);		
+		snprintf(COMD,sizeof(COMD),"get %s",_MSGrecieve._MSG);		
 		cout<<"COMD:"<<COMD<<endl;
 		
 		if((COMD!=NULL)){
@@ -124,21 +135,22 @@ void testRedis(void *Argv)
 			{  
 				printf("Get Data failed\n");  
 				redisFree(pRedisContext);  
-				return;  
+				continue;  
 			}  
 			if (pRedisReply->type != REDIS_REPLY_STRING)  
 			{  
 				freeReplyObject(pRedisReply);  
-				return;  
+				continue;  
 			}
 		
 			std::cout << pRedisReply->str << std::endl;
 			freeReplyObject(pRedisReply);
 		}
-		sleep(1);
+		NUM++;
+		cout<<"NUM:"<<NUM<<endl;
 	}
 	uv_barrier_wait(&blocker);
-};
+}
 void InitRedis(){
 	struct timeval timeout = {2, 0};    //2s的超时时间
 	pRedisContext = (redisContext*)redisConnectWithTimeout("127.0.0.1", 6379, timeout);
@@ -153,7 +165,7 @@ void InitRedis(){
             cout << "connect error: can't allocate redis context." <<endl;
         }        
     }
-};
+}
 
 void MessageIni(){
 
@@ -168,13 +180,13 @@ void MessageIni(){
 	}
 	cout<<"MessageIni success"<<endl;
 	
-};
+}
 
 void SemInitail(){
 	cout<<"SemInitail"<<endl;
 	uv_sem_init(&sem_main, 0);
 	uv_sem_init(&protectQUe, 0);
-};
+}
 
 void Recycle(){
 	uv_barrier_wait(&blocker);
@@ -182,10 +194,28 @@ void Recycle(){
 	uv_rwlock_destroy(&numlock);
 	uv_sem_destroy(&sem_main);
 	
-};
+}
+
+void worite_queu(uv_work_t *req){
+	
+	sprintf(_MSGsend._MSG,"%s",(char*) req->data);
+	if(0 != q_vsend(m_hQueue,&_MSGsend,sizeof(MSG)) )
+		cout<<"q_vsend error!"<<endl;
+
+	cout<<"send data:"<<_MSGsend._MSG<<endl;
+	uv_sem_wait(&protectQUe);
+	
+}
+
+void after(uv_work_t *req, int status) {
+  fprintf(stderr, "worite_queu complete\n");
+ // free(workReq);
+  //uv_close((uv_handle_t*) &async, NULL);
+}
 
 int main() {
 	
+
 	SemInitail();
 	MessageIni();
 	InitRedis();
@@ -200,7 +230,10 @@ int main() {
 	struct sockaddr_in recv_addr ;
 	uv_ip4_addr("0.0.0.0", 9999,&recv_addr);
 	uv_udp_bind(&recv_socket, (const struct sockaddr*)&recv_addr, 0);
-
+	
+	//uv_work_
+	//uv_queue_work(loop, &workReq, worite_queu, after);
+	//uv_udp
 	uv_udp_recv_start(&recv_socket, alloc_buffer, writeRedis);
 	return uv_run(loop, UV_RUN_DEFAULT);
 	Recycle();

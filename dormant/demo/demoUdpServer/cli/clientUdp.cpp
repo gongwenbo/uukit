@@ -61,7 +61,7 @@ int main(int argc, char **argv) {
     bzero(buf, BUFSIZE);
     printf("Please enter msg: \n");
 //    fgets(buf, BUFSIZE, stdin);
-	snprintf(buf,sizeof(buf),"get name");
+	snprintf(buf,sizeof(buf),"company");
     /* send the message to the server */
     serverlen = sizeof(serveraddr);
 	
