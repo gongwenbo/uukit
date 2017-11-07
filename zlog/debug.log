@@ -1,0 +1,4 @@
+2017-11-06 19:18:16 INFO [60309:main.cpp:20] info
+2017-11-06 19:18:16 ERROR [60309:main.cpp:21] error
+2017-11-06 19:18:16 DEBUG [60309:main.cpp:22] debug
+2017-11-06 19:18:16 WARN [60309:main.cpp:23] ware
