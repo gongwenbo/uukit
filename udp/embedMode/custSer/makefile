@@ -1,11 +1,11 @@
-TARGET=eserv
+TARGET=customer
 INCLUDE=-I/usr/local/include
 LIB_PATH=-L/usr/local/lib
 LIB=-lpthread
 OBJS=$(patsubst %.cpp,%.o,$(wildcard ./*.cpp))
 #CC=g++
 CC=mips-linux-uclibc-gnu-c++
-CFLAGS=-g -Wall -std=c++11 
+CFLAGS=-g -Wall 
 
 all:$(TARGET) 
 
