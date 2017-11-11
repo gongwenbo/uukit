@@ -1,6 +1,5 @@
 //video online data:11.9 by gong
 
-//#include "./json/json.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,8 +8,8 @@
 #include <fstream>
 #include <sys/time.h>
 #include <stdint.h>
-//#include "./param/paramConfig.h"
 #include "./include/cJSON.h"
+
 //commond package
 #define start_vf_preview 	0x4
 #define stop_vf_preview 	0x5
@@ -19,6 +18,9 @@
 #define	start_vf_photo		0x6
 #define stop_vf_photo		0x7
 #define MAX_MSG 10
+
+#include "./sock/sock.h"
+#define BUFSIZE 1024
 
 char gfile_name[50]="json.json";
 
@@ -62,43 +64,6 @@ int paramHandle(struct reci_msg request){
 		
 	}	
 }
-
-//deal with video
-/*int readConf(const char* file_name,const char* obj,const char* child_obj ,char* back){
-		
-	Json::Reader reader;
-	Json::Value values;
-	std::ifstream file_stream;
-	file_stream.open(file_name,std::ios::binary);
-	if(reader.parse(file_stream,values)){
-				
-		//url_=values["rtmp_url"].asString();
-		if(!values[obj].isNull()){
-			
-			Json::Value data=values[obj];
-			if(!data[child_obj].isNull()){
-				const char* tem=data[child_obj].asCString();
-				memcpy(back,tem,100);
-				return 0;
-				
-			}else{
-				cout<<"error:json data"<<endl;
-				return -1;
-			}
-			
-		}else{
-			cout<<"error:json obj"<<endl;
-			return -1;
-			
-		}		
-			
-	}else{
-		cout<<"error:reader.parse"<<endl;
-		return -1;				
-	}
-		
-}
-*/
 
 int readConf(const char* file_name,const char* obj,const char* child_obj ,char* back){
 	
@@ -247,8 +212,26 @@ int busiPhotoHandleClose(){
 
 }
 
-int cmdAnalfile_streamfile_streamHandle(int cmd)
+int cmdAnalfile_streamfile_streamHandle(char* commond)
 {
+	
+	int cmd;
+	printf("commond:%s\n",commond);
+	if(strcmp(commond,"start_vf_preview")==1)
+		cmd=start_vf_preview;
+	else if(strcmp(commond,"stop_vf_preview")==1)
+		cmd=stop_vf_preview;
+	else if(strcmp(commond,"start_vf_record")==1)
+		cmd=start_vf_record;	
+	else if(strcmp(commond,"stop_vf_record")==1)
+		cmd=stop_vf_record;	
+	else if(strcmp(commond,"start_vf_photo")==1)
+		cmd=start_vf_photo;	
+	else if(strcmp(commond,"stop_vf_photo")==1)
+		cmd=stop_vf_photo;	
+	else cmd=0;
+	printf("cmd:%x\n",cmd);
+
 	switch(cmd){
 		
 		case start_vf_preview:
@@ -277,24 +260,68 @@ int cmdAnalfile_streamfile_streamHandle(int cmd)
 		
 }
 
+void* threadFunc(void *agrv){
+	
+	char buf[BUFSIZE]; /* message buf */	
+	int sockfd;
+	struct sockaddr_in clientaddr;
+	sockfd = *(((int**)agrv)[0]);
+	clientaddr = *(((struct sockaddr_in**)agrv)[1]);
+		
+	while (1) 
+	{
+	
+	//recieve data
+	bzero(buf, BUFSIZE);
+	if(recieveData(sockfd,buf,clientaddr)!=0){
+		
+		cout<<"ERROR:recieveData"<<endl;
+		continue ;
+	}
+	
+	cmdAnalfile_streamfile_streamHandle(buf);
+	
+	//send data
+	if(sendData(sockfd,buf,clientaddr)!=0){
+		cout<<"ERROR:sendData"<<endl;
+		continue ;
+	}
+    sleep(1);
+    
+	}	
+		
+}
+
+
 int main(int argc,char* argv[])
 {
-	cout<<"start all"<<endl;
-	char obj[100]="record";
-	char child_obj[100]="filename";
-	cmdAnalfile_streamfile_streamHandle(start_vf_preview);
-	printf("***");
-	cmdAnalfile_streamfile_streamHandle(stop_vf_preview);
-	printf("***");
-	cmdAnalfile_streamfile_streamHandle(start_vf_record);
-	printf("***");
-	cmdAnalfile_streamfile_streamHandle(stop_vf_record);
-	printf("***");
-	cmdAnalfile_streamfile_streamHandle(start_vf_photo);
-	printf("***");
-	cmdAnalfile_streamfile_streamHandle(stop_vf_photo);
-	printf("***");	
+
+	int port;
+	int sockfd;
+	struct sockaddr_in clientaddr; /* client addr */
+	pthread_t pid;
+	int error;
+	
+	if (argc != 2) {
+		fprintf(stderr, "usage: %s \n", argv[0]);
+		exit(1);
+	}
+	port = atoi(argv[1]);  //port info
+	
+	if(buiSocAndBind(sockfd,port)!=0) //socket bind
+		return -1;
 		
+		//transform argv
+	void* args[2]={(void*)&sockfd,(void*)&clientaddr};
+	//create thread 
+	error=pthread_create(&pid,NULL,&threadFunc,args);
+	if(error!=0)
+		cout<<"create thread fail"<<endl;
+	cout<<"return main"<<endl;
+	
+	pthread_join(pid,NULL);
+	return 0;
+				
 }
 
 
