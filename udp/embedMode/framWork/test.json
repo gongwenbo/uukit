@@ -1,0 +1,55 @@
+{
+    "uploadid": "test jsoncpp",
+    "code": "0",
+    "msg": "",
+    "files":
+    [
+        {
+            "code": "0",
+            "msg": "",
+            "filename": "1D_16-35_1.jpg",
+            "filesize": "196690",
+            "width": "1024",
+            "height": "682",
+            "images":
+            [
+                {
+                    "url": "fmn061/20111118",
+                    "type": "large",
+                    "width": "720",
+                    "height": "479"
+                },
+                {
+                    "url": "fmn061/20111118",
+                    "type": "main",
+                    "width": "200",
+                    "height": "133"
+                }
+            ]
+        }
+    ]
+}
+
+
+
+
+{
+	
+	"rtmp_url":"rtmp://微录播ip地址:1935/live/sn", 	
+	"record":"record_filename",
+	
+	"baseInfo":{
+	"weilubo":"192.168.0.100",  
+	"sn":"wlbcamera-01",         
+	"mode":1          
+	},
+	
+
+	
+	"photo":{
+		"httpurl":"vtest.sewise.com:1001",
+		"username":"hongyu",
+		"uid":"123"
+	},
+
+}

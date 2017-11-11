@@ -1,8 +1,8 @@
 TARGET=ecli
-INCLUDE=-I/usr/local/include
-LIB_PATH=-L/usr/local/lib
+INCLUDE=-I./include
+LIB_PATH=-L./socklib
 LIB=-lpthread
-OBJS=$(patsubst %.cpp,%.o,$(wildcard ./*.cpp))
+OBJS=$(patsubst %.cpp,%.o,$(wildcard ./*.cpp ./socklib/*.cpp))
 #CC=g++
 CC=mips-linux-uclibc-gnu-c++
 CFLAGS=-g -Wall 
