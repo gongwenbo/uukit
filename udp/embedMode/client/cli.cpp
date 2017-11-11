@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
 	
 	/* get a message from the user */
 	bzero(buf, BUFSIZE);
-	sprintf(buf,"start_vf_photo");
+	sprintf(buf,"start_vf_preview");
 	
 	while(1){
 		

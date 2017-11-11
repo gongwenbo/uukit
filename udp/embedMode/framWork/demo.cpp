@@ -20,6 +20,7 @@
 #define MAX_MSG 10
 
 #include "./sock/sock.h"
+#include "./rtmp/src/play.h"
 #define BUFSIZE 1024
 
 char gfile_name[50]="json.json";
@@ -67,7 +68,6 @@ int paramHandle(struct reci_msg request){
 
 int readConf(const char* file_name,const char* obj,const char* child_obj ,char* back){
 	
-	cout<<"readCond"<<endl;
 	FILE *fp=fopen(file_name,"r");
 	fseek(fp,0,SEEK_END);
 	long len=ftell(fp);
@@ -76,8 +76,7 @@ int readConf(const char* file_name,const char* obj,const char* child_obj ,char* 
 	char* data=(char*)malloc(len+1);
 	fread(data,1,len,fp);
 	fclose(fp);
-	//printf("file::%s",data);
-	
+	//printf("file::%s",data);	
 	//parse json
 	cJSON *root_json = cJSON_Parse(data);
 	if (NULL == root_json)
@@ -87,8 +86,8 @@ int readConf(const char* file_name,const char* obj,const char* child_obj ,char* 
         return -1;
     }
 	cJSON *data_json = cJSON_GetObjectItem(root_json, obj);
-	char* tem=cJSON_Print(cJSON_GetObjectItem(data_json, child_obj));
-	strcpy(back,tem);
+	//char* tem=cJSON_Print(cJSON_GetObjectItem(data_json, child_obj));
+	strcpy(back,cJSON_GetObjectItem(data_json, child_obj)->valuestring);
 	free(data);	
 	return 0;
 }
@@ -96,15 +95,15 @@ int readConf(const char* file_name,const char* obj,const char* child_obj ,char* 
 
 int pullVideo(char *url){
 	
-	cout<<"pullVideo url:"<<url<<endl;
-	//.....other..
+	cout<<"pullVideo start ,url:"<<url<<endl;
+	rtmp_start(url);
 	
 }
 
 int stopVideo(){
 	
-	cout<<"stopVideo"<<endl;
-	//..stop;
+	cout<<"stop Push Video"<<endl;
+	rtmp_pause();
 	
 }
 int busiVidHandleStart(){
@@ -112,18 +111,22 @@ int busiVidHandleStart(){
 	cout<<"busiVidHandleStart"<<endl;
 	
 	char rtmp_url[100]="rtmp_url";
-	char ip[100]="ip";
+	char ip[3]="ip";
 	char ip_val[200];
-	char sn[100]="sn";
+	char port[5]="port";
+	char port_val[30];
+	char sn[3]="sn";
 	char sn_val[100];
 	char url[200];
 	
 	readConf(gfile_name,rtmp_url,ip,ip_val);
+	readConf(gfile_name,rtmp_url,port,port_val);
 	readConf(gfile_name,rtmp_url,sn,sn_val);
-	printf("ip_val:%s\n",ip_val);
+
 	strcpy(url,"rtmp://");
 	strcat(url,ip_val);
-	strcat(url,":1935/live/");
+	strcat(url,":");
+	strcat(url,port_val);
 	strcat(url,sn_val);
 	
 	pullVideo(url);	
@@ -216,7 +219,6 @@ int cmdAnalfile_streamfile_streamHandle(char* commond)
 {
 	
 	int cmd;
-	printf("commond:%s\n",commond);
 	if(strcmp(commond,"start_vf_preview")==1)
 		cmd=start_vf_preview;
 	else if(strcmp(commond,"stop_vf_preview")==1)
@@ -230,7 +232,6 @@ int cmdAnalfile_streamfile_streamHandle(char* commond)
 	else if(strcmp(commond,"stop_vf_photo")==1)
 		cmd=stop_vf_photo;	
 	else cmd=0;
-	printf("cmd:%x\n",cmd);
 
 	switch(cmd){
 		
