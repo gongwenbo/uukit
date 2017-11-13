@@ -4,6 +4,8 @@ sleep 1
 route add default gw 192.168.99.1
 sleep 1 
 mount 192.168.99.139:/root /mnt -o nolock
+
+mount 192.168.99.139:/root/uukit/udp/embedMode /mnt -o nolock
 sleep 1 
 cd /system/init/driver && insmod sensor_jxf22.ko
 

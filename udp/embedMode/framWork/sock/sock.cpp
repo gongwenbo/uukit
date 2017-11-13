@@ -36,35 +36,42 @@ int buiSocAndBind(int &sfd,int port){
 	return 0;
 }
 
-int sendData(int sfd,char* buf,struct sockaddr_in cli_addr){
+int sendData(int sfd,void* buf,struct sockaddr_in cli_addr){
 	
 	//send data
 	int n; /* message byte size */
 	socklen_t clientlen= sizeof(cli_addr);
-	
-    n = sendto(sfd, buf, strlen(buf), 0, 
+	const char* tem=(const char*)buf;
+	size_t len_send=sizeof(struct form_cli);
+    n = sendto(sfd, tem, len_send, 0, 
 	  (struct sockaddr *) &cli_addr, clientlen);
     if (n < 0) {
 		error("ERROR in sendto");
 		return -1;
-	}	
+	}
+	//printf("sendData:%d",n);
 	return 0;
 	//business...
 }
 
-int recieveData(int sfd,char* buf,struct sockaddr_in &clientaddr){
+int recieveData(int sfd,void* buf,struct sockaddr_in &clientaddr){
 
 	int n=0;
 	struct hostent *hostp; /* client host info */
 	char *hostaddrp; /* dotted decimal host addr string */
 	socklen_t clientlen = sizeof(clientaddr);
-	n = recvfrom(sfd, buf, 1024, 0,
+	char* temp=(char*)malloc(sizeof(struct form_cli));
+	size_t len=sizeof(struct form_cli);
+	n = recvfrom(sfd, temp, len, 0,
 		 (struct sockaddr *) &clientaddr, &clientlen);
     if (n < 0){
 		error("ERROR in recvfrom");
 		return -1;
 	}
-
+	//printf("recieve::CMD:%d\n",((struct form_cli*)temp)->CMD);
+	//printf("recieve::info:%s\n",((struct form_cli*)temp)->cmdInfo);
+	memcpy(buf,temp,sizeof(struct form_cli));
+	free(temp);
     //gethostbyaddr: determine who sent the datagram
     hostp = gethostbyaddr((const char *)&clientaddr.sin_addr.s_addr, 
 			  sizeof(clientaddr.sin_addr.s_addr), AF_INET);
@@ -76,7 +83,6 @@ int recieveData(int sfd,char* buf,struct sockaddr_in &clientaddr){
 	
     printf("server received datagram from %s (%s)::%u\n", 
 	   hostp->h_name, hostaddrp,clientaddr.sin_port);
-    printf("server received %d/%d bytes: %s\n", strlen(buf), n, buf);
 	return 0;
 	//business .....	
 }

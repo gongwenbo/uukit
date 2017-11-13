@@ -14,14 +14,24 @@
 #include <unistd.h>
 #include <string>
 #include <iostream>
+#define MAX_MSG 10
+struct form_cli{
+	
+	unsigned int 	sign;	
+	unsigned short 	cmdLen;	//包括 头长度
+	unsigned short	CMD;
+	unsigned char   cmdInfo[400];
+	
+}; 
+
 using namespace std;
 void error(string str);
 
-int recieveData(int sfd,char* buf,struct sockaddr_in &clientaddr);
+int recieveData(int sfd,void* buf,struct sockaddr_in &clientaddr);
 
 int buiSocAndBind(int &sfd,int port);
 
-int sendData(int sfd,char* buf,struct sockaddr_in cli_addr);
+int sendData(int sfd,void* buf,struct sockaddr_in cli_addr);
 
 
 #endif

@@ -7,15 +7,19 @@ OBJS=$(patsubst %.cpp,%.o,$(wildcard ./*.cpp ./socklib/*.cpp))
 CC=mips-linux-uclibc-gnu-c++
 CFLAGS=-g -Wall 
 
-all:$(TARGET) 
+all:$(TARGET) clean_obj
 
 $(TARGET):$(OBJS)
 	$(CC) -o $@ $^ $(LIB_PATH) $(LIB)
 
 .cpp.o:
-	$(CC) -o $@ -c $< $(INCLUDE) 
+	$(CC) -o $@ -c $< $(CFLAGS) $(INCLUDE) 
 
 .PHONY:clean
 clean:
-	rm -rf $(OBJS) $(TARGET)
+	rm -rf $(TARGET)
+clean_obj:
+	rm -rf $(OBJS)
+
+
 

@@ -1,7 +1,7 @@
 #include "../include/sock.h"
 
-void error(char *msg) {
-    perror(msg);
+void error(std::string msg) {
+    perror(msg.c_str());
     exit(0);
 }
 
@@ -30,30 +30,35 @@ int initailSock(int &sfd,char *host_nam,int port,struct sockaddr_in &ser_addr){
 	
 }
 
-int sendData(int sfd,char *buf,struct sockaddr_in serv_addr){
+int sendData(int sfd,NETCMD_pt buf,struct sockaddr_in serv_addr){
 	
 	socklen_t serverlen = sizeof(serv_addr);
-    int n = sendto(sfd, buf, strlen(buf), 0, (struct sockaddr*)&serv_addr, serverlen);
+	size_t len=sizeof(NETCMD_t);
+    int n = sendto(sfd, (char*)buf, len, 0, (struct sockaddr*)&serv_addr, serverlen);
     if (n < 0){ 
 		error("ERROR in sendto");
 		return -1;
-	}  
+	} 
+	printf("send data bytes:%d\n",n);
 	return 0;	
 }
 
-
-
-int recieveDate(int sfd,char *buf,struct sockaddr_in &serv_addr){
+int recieveDate(int sfd,NETCMD_pt reci_buf,struct sockaddr_in &serv_addr){
+	
+	char* buf=(char*)malloc(sizeof(NETCMD_t));
+	memset(buf,0,sizeof(NETCMD_t));
+	size_t len=sizeof(NETCMD_t);
 	
 	socklen_t serverlen = sizeof(serv_addr);
-    int n = recvfrom(sfd, buf, strlen(buf), 0, (struct sockaddr*)&serv_addr, &serverlen);
+    int n = recvfrom(sfd, buf, len, 0, (struct sockaddr*)&serv_addr, &serverlen);
     if (n < 0){ 
 		error("ERROR in recvfrom");
 		return -1;
 	}
-    printf("Echo from server: %s\n", buf);
+	//memcpy(reci_buf,buf,sizeof(NETCMD_t));
+	reci_buf=(NETCMD_pt)buf;
+	free(buf);
+    printf("Echo from server: %d\n", reci_buf->CMD);
     return 0;
 	
 }
-
-

@@ -1,5 +1,4 @@
 //video online data:11.9 by gong
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,20 +22,28 @@
 #include "./rtmp/src/play.h"
 #define BUFSIZE 1024
 
+#include "./nmOsal/src/nmOsalPublicFun.h" 
+#include "./nmOsal/src/nmOsalQueue.h"
+#include "./nmOsal/inc/nmOsal.h"
+#include "./nmOsal/inc/nmOsalType.h"
+
 char gfile_name[50]="json.json";
+char push_url[200];
 
+unsigned long m_hQueue;
+unsigned long maxMsgs=10;
+
+unsigned long from_hQueue;
+unsigned long max_from_Msgs=8;
+	
 using namespace std;
-struct reci_msg{
-	//old parameter
-	short flag; //0->old,1->business
-	int index[MAX_MSG];
-	void* data[MAX_MSG];
-	//add business 
-	char cmd[20];  //inlude video,record and photo
-	void* handle_para;  //reserve 
-		
-};
 
+typedef struct msg_data{
+	
+	char buf_msg[200];
+	void *para;//reserve
+			
+}MSG_RS;
 
 struct TrecordStaMsgBack{
 	char* cmd;
@@ -52,7 +59,7 @@ struct TrecordStopMsgBack{
 	
 };
 
-int paramHandle(struct reci_msg request){
+int paramHandle(MSG_RS request){
 	
 	for(int i=0;i<MAX_MSG;i++){
 		
@@ -93,23 +100,29 @@ int readConf(const char* file_name,const char* obj,const char* child_obj ,char* 
 }
 
 
-int pullVideo(char *url){
+void* pullVideo(void *agrv){
 	
-	cout<<"pullVideo start ,url:"<<url<<endl;
-	rtmp_start(url);
-	
+	unsigned long ulResp = 0;
+	unsigned long ulLen=0;
+	MSG_RS r_msg;
+	while(1){
+	ulResp = q_vreceive(m_hQueue,1,0,&r_msg,sizeof(MSG_RS),&ulLen);
+	if(ulResp!=0)
+		cout<<"q_vreceiveERROR!!"<<endl;
+
+	cout<<"pullVideo start ,url:"<<r_msg.buf_msg<<endl;
+	//rtmp_start(r_msg.buf_msg);
+	}
 }
 
 int stopVideo(){
 	
 	cout<<"stop Push Video"<<endl;
-	rtmp_pause();
+	//rtmp_pause();
 	
 }
 int busiVidHandleStart(){
-	
-	cout<<"busiVidHandleStart"<<endl;
-	
+		
 	char rtmp_url[100]="rtmp_url";
 	char ip[3]="ip";
 	char ip_val[200];
@@ -117,19 +130,24 @@ int busiVidHandleStart(){
 	char port_val[30];
 	char sn[3]="sn";
 	char sn_val[100];
-	char url[200];
+	MSG_RS send_msg;
+	
 	
 	readConf(gfile_name,rtmp_url,ip,ip_val);
 	readConf(gfile_name,rtmp_url,port,port_val);
 	readConf(gfile_name,rtmp_url,sn,sn_val);
 
-	strcpy(url,"rtmp://");
-	strcat(url,ip_val);
-	strcat(url,":");
-	strcat(url,port_val);
-	strcat(url,sn_val);
+	strcpy(push_url,"rtmp://");
+	strcat(push_url,ip_val);
+	strcat(push_url,":");
+	strcat(push_url,port_val);
+	strcat(push_url,sn_val);
+	strcpy(send_msg.buf_msg,push_url);
 	
-	pullVideo(url);	
+	if(0 != q_vsend(m_hQueue,&send_msg,sizeof(MSG_RS)) )
+		cout<<"q_vsend error!"<<endl;
+	
+	//pullVideo(push_url);	
 }
 
 int busiVidHandleStop(){
@@ -151,7 +169,7 @@ int RecordStartCallBack(struct timeval &tv){
 int busiRecordHandleStart(){
 	
 	cout<<"busiRecordHandleStart"<<endl;
-	cout<<"sndmsg 127.0.0.1 2"<<endl;   //##开始录制回调成
+	cout<<"sndmsg 127.0.0.1 2"<<endl;   //##�?始录制回调成
 	struct timeval tv;
 	gettimeofday(&tv,NULL);
 	RecordStartCallBack(tv);	
@@ -176,7 +194,7 @@ int busiRecordHandleStop(){
 	char file_name[100]="filename";
 	char file_name_val[100];
 	if(readConf(gfile_name,record,file_name,file_name_val)!=0){
-		cout<<"busiVidHandleStart URL faild"<<endl;
+		cout<<"busiVidHandleStop URL faild"<<endl;
 		return -1;
 	}
 	RecordStopCallBack(file_name_val);
@@ -215,7 +233,7 @@ int busiPhotoHandleClose(){
 
 }
 
-int cmdAnalfile_streamfile_streamHandle(char* commond)
+int CommondParse(char* commond)
 {
 	
 	int cmd;
@@ -261,36 +279,38 @@ int cmdAnalfile_streamfile_streamHandle(char* commond)
 		
 }
 
-void* threadFunc(void *agrv){
-	
-	char buf[BUFSIZE]; /* message buf */	
+void* InternetDataHandle(void *agrv){
+		
 	int sockfd;
 	struct sockaddr_in clientaddr;
 	sockfd = *(((int**)agrv)[0]);
 	clientaddr = *(((struct sockaddr_in**)agrv)[1]);
-		
+	void* buf_global=(void*)malloc(sizeof(struct form_cli));
+	memset(buf_global,0,sizeof(struct form_cli));
 	while (1) 
 	{
 	
 	//recieve data
-	bzero(buf, BUFSIZE);
-	if(recieveData(sockfd,buf,clientaddr)!=0){
+	//bzero(buf_global, BUFSIZE);
+	if(recieveData(sockfd,buf_global,clientaddr)!=0){
 		
 		cout<<"ERROR:recieveData"<<endl;
 		continue ;
 	}
 	
-	cmdAnalfile_streamfile_streamHandle(buf);
+	struct form_cli *from_client_msg=(struct form_cli *)buf_global;
+	printf("from_client_msg::CMD:%d,cmdInfo:%s\n",from_client_msg->CMD,from_client_msg->cmdInfo);
+	//if(0 != q_vsend(from_hQueue,from_client_msg,sizeof(struct form_cli)) )
+	//	cout<<"q_vsend4 error!"<<endl;
 	
-	//send data
-	if(sendData(sockfd,buf,clientaddr)!=0){
+	if(sendData(sockfd,buf_global,clientaddr)!=0){
 		cout<<"ERROR:sendData"<<endl;
 		continue ;
 	}
     sleep(1);
     
 	}	
-		
+	free(buf_global);	
 }
 
 
@@ -300,8 +320,12 @@ int main(int argc,char* argv[])
 	int port;
 	int sockfd;
 	struct sockaddr_in clientaddr; /* client addr */
-	pthread_t pid;
-	int error;
+	pthread_t pid_inter;
+	pthread_t pid_push_v;
+	int error_intet;
+	int error_push_video;
+	struct form_cli get_msg_from_cli;
+	unsigned long from_ulLen=0;
 	
 	if (argc != 2) {
 		fprintf(stderr, "usage: %s \n", argv[0]);
@@ -311,33 +335,45 @@ int main(int argc,char* argv[])
 	
 	if(buiSocAndBind(sockfd,port)!=0) //socket bind
 		return -1;
-		
-		//transform argv
-	void* args[2]={(void*)&sockfd,(void*)&clientaddr};
-	//create thread 
-	error=pthread_create(&pid,NULL,&threadFunc,args);
-	if(error!=0)
-		cout<<"create thread fail"<<endl;
-	cout<<"return main"<<endl;
 	
-	pthread_join(pid,NULL);
+	//initial m_hQueue
+	unsigned long res_m_hQueue =q_vcreate("msg",0,maxMsgs,sizeof(MSG_RS),&m_hQueue);
+	if(res_m_hQueue!=0)
+		cout<<"q_vcreate1 error"<<endl;
+	
+	//initial from_hQueue
+	unsigned long res_from_hQueue=q_vcreate("from_msg",0,max_from_Msgs,sizeof(struct form_cli),&from_hQueue);
+	if(res_from_hQueue!=0)
+		cout<<"q_vcreate2 error"<<endl;
+
+	
+	//transform argv
+	void* args_inter[2]={(void*)&sockfd,(void*)&clientaddr};
+	
+	//deal with internet event  
+	error_intet=pthread_create(&pid_inter,NULL,&InternetDataHandle,args_inter);
+	if(error_intet!=0)
+		cout<<"create thread1 fail"<<endl;
+	/*
+	//deal with push video 
+	error_push_video=pthread_create(&pid_push_v,NULL,&pullVideo,NULL);
+	if(error_push_video!=0)
+		cout<<"create thread2 fail"<<endl;	
+	
+	cout<<"return main"<<endl;
+	while(1){
+		if(0!=q_vreceive(from_hQueue,1,0,&get_msg_from_cli,sizeof(struct form_cli),&from_ulLen));
+			cout<<"q_vreceiveERROR!!4"<<endl;
+		CommondParse(get_msg_from_cli.CMD);
+	}
+	*/
+	
+	printf("return main\n");
+
+	pthread_join(pid_inter,NULL);
+	while(1){;}
+	//pthread_join(pid_push_v,NULL);
 	return 0;
 				
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
