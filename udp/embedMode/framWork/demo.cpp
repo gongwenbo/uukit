@@ -10,12 +10,12 @@
 #include "./include/cJSON.h"
 
 //commond package
-#define start_vf_preview 	0x4
-#define stop_vf_preview 	0x5
-#define start_vf_record		0x17
-#define stop_vf_record		0x18
-#define	start_vf_photo		0x6
-#define stop_vf_photo		0x7
+#define start_vf_preview 	1
+#define stop_vf_preview 	2
+#define start_vf_record		3
+#define stop_vf_record		4
+#define	start_vf_photo		5
+#define stop_vf_photo		6
 #define MAX_MSG 10
 
 #include "./sock/sock.h"
@@ -107,9 +107,10 @@ void* pullVideo(void *agrv){
 	MSG_RS r_msg;
 	while(1){
 	ulResp = q_vreceive(m_hQueue,1,0,&r_msg,sizeof(MSG_RS),&ulLen);
-	if(ulResp!=0)
+	if(ulResp!=0){
 		cout<<"q_vreceiveERROR!!"<<endl;
-
+		continue;
+	}
 	cout<<"pullVideo start ,url:"<<r_msg.buf_msg<<endl;
 	//rtmp_start(r_msg.buf_msg);
 	}
@@ -233,25 +234,10 @@ int busiPhotoHandleClose(){
 
 }
 
-int CommondParse(char* commond)
+int CommondParse(struct form_cli from_commond)
 {
 	
-	int cmd;
-	if(strcmp(commond,"start_vf_preview")==1)
-		cmd=start_vf_preview;
-	else if(strcmp(commond,"stop_vf_preview")==1)
-		cmd=stop_vf_preview;
-	else if(strcmp(commond,"start_vf_record")==1)
-		cmd=start_vf_record;	
-	else if(strcmp(commond,"stop_vf_record")==1)
-		cmd=stop_vf_record;	
-	else if(strcmp(commond,"start_vf_photo")==1)
-		cmd=start_vf_photo;	
-	else if(strcmp(commond,"stop_vf_photo")==1)
-		cmd=stop_vf_photo;	
-	else cmd=0;
-
-	switch(cmd){
+	switch(from_commond.CMD){
 		
 		case start_vf_preview:
 			busiVidHandleStart();
@@ -300,13 +286,15 @@ void* InternetDataHandle(void *agrv){
 	
 	struct form_cli *from_client_msg=(struct form_cli *)buf_global;
 	printf("from_client_msg::CMD:%d,cmdInfo:%s\n",from_client_msg->CMD,from_client_msg->cmdInfo);
-	//if(0 != q_vsend(from_hQueue,from_client_msg,sizeof(struct form_cli)) )
-	//	cout<<"q_vsend4 error!"<<endl;
+
 	
 	if(sendData(sockfd,buf_global,clientaddr)!=0){
 		cout<<"ERROR:sendData"<<endl;
 		continue ;
 	}
+
+	if(0 != q_vsend(from_hQueue,from_client_msg,sizeof(struct form_cli)) )
+		cout<<"q_vsend4 error!"<<endl;
     sleep(1);
     
 	}	
@@ -354,7 +342,7 @@ int main(int argc,char* argv[])
 	error_intet=pthread_create(&pid_inter,NULL,&InternetDataHandle,args_inter);
 	if(error_intet!=0)
 		cout<<"create thread1 fail"<<endl;
-	/*
+	
 	//deal with push video 
 	error_push_video=pthread_create(&pid_push_v,NULL,&pullVideo,NULL);
 	if(error_push_video!=0)
@@ -364,15 +352,12 @@ int main(int argc,char* argv[])
 	while(1){
 		if(0!=q_vreceive(from_hQueue,1,0,&get_msg_from_cli,sizeof(struct form_cli),&from_ulLen));
 			cout<<"q_vreceiveERROR!!4"<<endl;
-		CommondParse(get_msg_from_cli.CMD);
+		CommondParse(get_msg_from_cli);
+		sleep(1);
 	}
-	*/
 	
-	printf("return main\n");
-
 	pthread_join(pid_inter,NULL);
-	while(1){;}
-	//pthread_join(pid_push_v,NULL);
+	pthread_join(pid_push_v,NULL);
 	return 0;
 				
 }
