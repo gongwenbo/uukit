@@ -1,0 +1,93 @@
+//11.15
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h> 
+#include <iostream>
+#define BUFSIZE 1024
+
+
+void error(std::string msg) {
+    perror(msg.c_str());
+    exit(0);
+}
+
+int main(int argc, char **argv) {
+    int sockfd, portno, n;
+    struct sockaddr_in serveraddr;
+    struct hostent *server;
+    char *hostname;
+    char buf[BUFSIZE];
+
+    /* check command line arguments */
+    if (argc != 3) {
+       fprintf(stderr,"usage: %s <hostname> <port>\n", argv[0]);
+       exit(0);
+    }
+    hostname = argv[1];
+    portno = atoi(argv[2]);
+
+    /* socket: create the socket */
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd < 0) 
+        error("ERROR opening socket");
+
+    /* gethostbyname: get the server's DNS entry */
+    server = gethostbyname(hostname);
+    if (server == NULL) {
+        fprintf(stderr,"ERROR, no such host as %s\n", hostname);
+        exit(0);
+    }
+
+    /* build the server's Internet address */
+    bzero((char *) &serveraddr, sizeof(serveraddr));
+    serveraddr.sin_family = AF_INET;
+    bcopy((char *)server->h_addr, 
+	  (char *)&serveraddr.sin_addr.s_addr, server->h_length);
+    serveraddr.sin_port = htons(portno);
+
+    /* connect: create a connection with the server */
+    if (connect(sockfd, (struct sockaddr *)&serveraddr, sizeof(serveraddr)) < 0) 
+      error("ERROR connecting");
+
+    /* get message line from the user */
+    //printf("Please enter msg: ");
+    //bzero(buf, BUFSIZE);
+    //fgets(buf, BUFSIZE, stdin);
+
+    /* send the message line to the server */
+	
+	char cut1[100];
+	char cut2[100];
+	char cut3[500];
+	
+	snprintf(cut1,sizeof(cut1),"POST /upload HTTP/1.1\nHost: 121.201.63.127:8080\n");
+	snprintf(cut2,sizeof(cut2),"Accept: */*\n");
+	snprintf(cut3,sizeof(cut3),"%s\n%s\n%s\n%s\n%s\n%s\n",
+	"Content-Length: 176626",
+	"Expect: 100-continue",
+	"Content-Type: multipart/form-data; boundary=----------------------------fb03d102a943",
+	"------------------------------fb03d102a943",
+	"Content-Disposition: form-data; name='file'; filename='tim.jpg'",
+	"Content-Type: image/jpeg");	
+	snprintf(buf,sizeof(buf),"%s%s%s",cut1,cut2,cut3);
+	
+	std::cout<<"buf::\n"<<buf<<std::endl;
+	
+    n = write(sockfd, buf, strlen(buf));
+    if (n < 0) 
+      error("ERROR writing to socket");
+
+    /* print the server's reply */
+    bzero(buf, BUFSIZE);
+    n = read(sockfd, buf, BUFSIZE);
+    if (n < 0) 
+      error("ERROR reading from socket");
+    printf("Echo from server: %s", buf);
+    close(sockfd);
+    return 0;
+}

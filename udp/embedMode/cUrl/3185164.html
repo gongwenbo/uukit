@@ -1,0 +1,352 @@
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>通过HTTP协议上传文件 - 烛秋 - 博客园</title>
+<link type="text/css" rel="stylesheet" href="/bundles/blog-common.css?v=ChDk9h03-S75WEqNhGvXkWireJ5cCWdK1xRM9NIXfnM1"/>
+<link id="MainCss" type="text/css" rel="stylesheet" href="/skins/nature/bundle-nature.css?v=SMSmqROZamyrz003uRLsZZQqisVE_ymEDyPy07GKHPw1"/>
+<link type="text/css" rel="stylesheet" href="/blog/customcss/69721.css?v=BEkpwPN0juVLQnlwQUYHO4eKmoU%3d"/>
+<link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/nature/bundle-nature-mobile.css?v=x_kvsPnyiEe2CIJoQglsCzfnmRiJRUWkXYKy9yqPylc1"/>
+<link title="RSS" type="application/rss+xml" rel="alternate" href="http://www.cnblogs.com/cswuyg/rss"/>
+<link title="RSD" type="application/rsd+xml" rel="EditURI" href="http://www.cnblogs.com/cswuyg/rsd.xml"/>
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="http://www.cnblogs.com/cswuyg/wlwmanifest.xml"/>
+<script src="//common.cnblogs.com/script/jquery.js" type="text/javascript"></script>  
+<script type="text/javascript">var currentBlogApp = 'cswuyg', cb_enable_mathjax=false;var isLogined=false;</script>
+<script src="/bundles/blog-common.js?v=7RA_FyMZc2FeSt0PudYSR_a-R9OGIHQbo-m4rDq2G3A1" type="text/javascript"></script>
+</head>
+<body>
+<a name="top"></a>
+<div id="page_begin_html"></div><script>load_page_begin_html();</script>
+
+<!--done-->
+<div id="banner"><div id="bnr_pic">
+<!--done-->
+<div class="header">
+	<div class="headerText">
+		<a id="Header1_HeaderTitle" class="headermaintitle" href="http://www.cnblogs.com/cswuyg/">烛秋</a><br>
+	</div><br>
+	<div class="headerDis"></div>
+</div>
+</div></div>
+<div id="main">
+	<!-- left starts -->
+	<div id="left">
+		<DIV id="mystats">
+			<br/>
+				<div id="blog_stats">
+<!--done-->
+<div class="blogStats">
+随笔 - 73&nbsp;
+文章 - 0&nbsp;
+评论 - 123&nbsp;
+
+</div></div>
+			
+		</DIV>
+		<div id="mylinks">
+<!--done-->
+<a id="blog_nav_sitehome" class="menu" href="http://www.cnblogs.com/">博客园</a>&nbsp;&nbsp;<a id="blog_nav_myhome" class="menu" href="http://www.cnblogs.com/cswuyg/">首页</a>&nbsp;&nbsp;<a id="blog_nav_newpost" class="menu" rel="nofollow" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">新随笔</a>&nbsp;&nbsp;<a id="blog_nav_contact" accesskey="9" class="menu" rel="nofollow" href="https://msg.cnblogs.com/send/%E7%83%9B%E7%A7%8B">联系</a>&nbsp;&nbsp;<a id="blog_nav_admin" class="menu" rel="nofollow" href="https://i.cnblogs.com/">管理</a>&nbsp;&nbsp;<a id="blog_nav_rss" class="menu" href="http://www.cnblogs.com/cswuyg/rss">订阅</a>&nbsp;<a id="blog_nav_rss_image" href="http://www.cnblogs.com/cswuyg/rss"><img src="//www.cnblogs.com/images/xml.gif" alt="订阅" /></a></div>
+		<div id="topics">
+			
+<div id="post_detail">
+<div class="post">
+	<div class="postTitle">
+		<h1><a id="cb_post_title_url" class="postTitle2" href="http://www.cnblogs.com/cswuyg/p/3185164.html">通过HTTP协议上传文件</a></h1>
+	</div>
+	<div id="cnblogs_post_body"><div>&nbsp; &nbsp; &nbsp;HTTP是很常见的协议，虽然用得很多，但对细节的了解却是很浅，这回通过向服务端上传文件信息来理解细节。网络库的选择：1、WinHTTP是windows下常用的库；2、CURL是广受喜爱的开源库。对于我来说，libcurl最大的优点是使用方便，可以把注意力更多的集中到业务层上，提高工作效率，避免重造轮子；缺点是略大（MD编译有264KB，MT编译有340KB），不像WinHTTP可以由windows操作系统集成。下边展示如何使用这两种网络库实现表单POST文件。</div>
+<div>
+<p style="background: gray; font-size: 18pt; color: #ffffff;">一、libcurl</p>
+</div>
+<div>&nbsp; &nbsp; &nbsp;库下载：<a href="http://curl.haxx.se/download.html">http://curl.haxx.se/download.html</a></div>
+<div>&nbsp; &nbsp; &nbsp;库编译：把include、lib的代码拿出来，使用静态库，设置预定义宏BUILDING_LIBCURL。</div>
+<div>&nbsp; &nbsp; &nbsp;测试工程：设置预定义宏CURL_STATICLIB；添加依赖lib：Ws2_32.lib Wldap32.lib。</div>
+<div><span style="color: #ff6600;">&nbsp; &nbsp; &nbsp;<strong>主要代码</strong>：</span></div>
+<div>
+<div class="cnblogs_code">
+<pre><span style="color: #0000ff;">void</span><span style="color: #000000;"> curl_post_cswuyg()
+{
+    curl_global_init(CURL_GLOBAL_ALL);
+    CURL</span>* hCurl =<span style="color: #000000;"> curl_easy_init();
+    </span><span style="color: #0000ff;">if</span>(hCurl !=<span style="color: #000000;"> NULL)
+    {
+        </span><span style="color: #008000;">//</span><span style="color: #008000;">也许有Expect: 100-continue，去掉它</span>
+        curl_slist* pOptionList =<span style="color: #000000;"> NULL;
+        pOptionList </span>= curl_slist_append(pOptionList, <span style="color: #800000;">"</span><span style="color: #800000;">Expect:</span><span style="color: #800000;">"</span><span style="color: #000000;">);
+        curl_easy_setopt(hCurl, CURLOPT_HTTPHEADER, pOptionList);
+
+        curl_httppost</span>* pFormPost =<span style="color: #000000;"> NULL;
+        curl_httppost</span>* pLastElem =<span style="color: #000000;"> NULL;
+        </span><span style="color: #008000;">//</span><span style="color: #008000;">上传文件，指定本地文件完整路径</span>
+        curl_formadd(&amp;pFormPost, &amp;pLastElem, CURLFORM_COPYNAME, <span style="color: #800000;">"</span><span style="color: #800000;">ufile01</span><span style="color: #800000;">"</span>, CURLFORM_FILE, <span style="color: #800000;">"</span><span style="color: #800000;">C:\\temp\\upload_test_curl_cswuyg.txt</span><span style="color: #800000;">"</span>, CURLFORM_CONTENTTYPE, <span style="color: #800000;">"</span><span style="color: #800000;">application/octet-stream</span><span style="color: #800000;">"</span><span style="color: #000000;">, CURLFORM_END);
+
+        </span><span style="color: #008000;">//</span><span style="color: #008000;">上传自定义文件内容的文件，CURLFORM_BUFFER指定服务端文件名
+        </span><span style="color: #008000;">//</span><span style="color: #008000; text-decoration: underline;">http://curl.haxx.se/libcurl/c/curl_formadd.html</span>
+        <span style="color: #0000ff;">char</span>* file_info = <span style="color: #800000;">"</span><span style="color: #800000;">file_info&mdash;&mdash;cswuyg</span><span style="color: #800000;">"</span><span style="color: #000000;">;
+        </span><span style="color: #0000ff;">int</span> record_length = std::<span style="color: #0000ff;">string</span><span style="color: #000000;">(file_info).length();
+        curl_formadd(</span>&amp;pFormPost, &amp;<span style="color: #000000;">pLastElem,
+            CURLFORM_COPYNAME, </span><span style="color: #800000;">"</span><span style="color: #800000;">ufile01</span><span style="color: #800000;">"</span><span style="color: #000000;">,
+            CURLFORM_BUFFER, </span><span style="color: #800000;">"</span><span style="color: #800000;">cswuyg_test.txt</span><span style="color: #800000;">"</span><span style="color: #000000;">,
+            CURLFORM_BUFFERPTR, file_info,
+            CURLFORM_BUFFERLENGTH, record_length,
+            CURLFORM_END);
+        </span><span style="color: #008000;">//</span><span style="color: #008000;">不加一个结束的hfs服务端无法写入文件，一般不存在这种问题，这里加入只是为了测试.
+        </span><span style="color: #008000;">//</span><span style="color: #008000;">curl_formadd(&amp;pFormPost, &amp;pLastElem, CURLFORM_COPYNAME, "end", CURLFORM_COPYCONTENTS, "end", CURLFORM_END);</span>
+<span style="color: #000000;">        curl_easy_setopt(hCurl, CURLOPT_HTTPPOST, pFormPost);
+        curl_easy_setopt(hCurl, CURLOPT_URL, </span><span style="color: #800000;">"</span><span style="color: #800000;">http://127.0.0.1/hfs_up/</span><span style="color: #800000;">"</span><span style="color: #000000;">);
+
+        CURLcode res </span>=<span style="color: #000000;"> curl_easy_perform(hCurl);
+        </span><span style="color: #0000ff;">if</span>(res !=<span style="color: #000000;"> CURLE_OK)
+        {
+            std::wcout </span>&lt;&lt; <span style="color: #800000;">"</span><span style="color: #800000;">Error</span><span style="color: #800000;">"</span> &lt;&lt;<span style="color: #000000;"> std::endl;
+        }
+        curl_formfree(pFormPost);
+        curl_easy_cleanup(hCurl);
+    }
+
+    curl_global_cleanup();
+}</span></pre>
+</div>
+</div>
+<div>&nbsp; &nbsp; <strong>&nbsp;<span style="color: #ff6600;">wireshark抓包</span></strong>，127.0.0.1地址无法抓到，网络上有解决方案。示意图：</div>
+<div>头域设置分割符：</div>
+<div><img src="http://images.cnitblog.com/blog/104985/201307/11221807-51b67a51bc634bb5bafce9867de2935a.jpg" alt="" /></div>
+<div>&nbsp;MIME部分：</div>
+<div><img src="http://images.cnitblog.com/blog/104985/201307/11221903-50b75dc6e68f4e69927b297cb37ed4c1.jpg" alt="" /></div>
+<div>　
+<p style="background: gray; font-size: 18pt; color: #ffffff;">二、WinHTTP</p>
+</div>
+<div>&nbsp; &nbsp; &nbsp;库：winhttp.lib</div>
+<div>&nbsp; &nbsp; &nbsp;<span style="color: #ff6600;"><strong>主要代码</strong></span>：</div>
+<div>
+<div class="cnblogs_code">
+<pre><span style="color: #0000ff;">void</span><span style="color: #000000;"> cswuyg_winhttp_post()
+{
+    HINTERNET hSession </span>= ::WinHttpOpen(L<span style="color: #800000;">"</span><span style="color: #800000;">cswuyg post test/1.0</span><span style="color: #800000;">"</span><span style="color: #000000;">, WINHTTP_ACCESS_TYPE_NO_PROXY, NULL, NULL, NULL);
+    HINTERNET hConnect </span>= ::WinHttpConnect(hSession, L<span style="color: #800000;">"</span><span style="color: #800000;">127.0.0.1</span><span style="color: #800000;">"</span>, INTERNET_DEFAULT_HTTP_PORT, <span style="color: #800080;">0</span><span style="color: #000000;">);
+    </span><span style="color: #0000ff;">if</span> (hConnect ==<span style="color: #000000;"> NULL)
+    {
+        </span><span style="color: #0000ff;">int</span> i =<span style="color: #000000;"> ERROR_WINHTTP_INCORRECT_HANDLE_TYPE;
+        </span><span style="color: #0000ff;">return</span><span style="color: #000000;">;
+    }
+    </span><span style="color: #0000ff;">const</span> wchar_t* lpszAcceptedType[] = {L<span style="color: #800000;">"</span><span style="color: #800000;">*/*</span><span style="color: #800000;">"</span><span style="color: #000000;">, NULL};
+    HINTERNET hRequest </span>= ::WinHttpOpenRequest(hConnect, L<span style="color: #800000;">"</span><span style="color: #800000;">POST</span><span style="color: #800000;">"</span>, L<span style="color: #800000;">"</span><span style="color: #800000;">hfs_up</span><span style="color: #800000;">"</span>, L<span style="color: #800000;">"</span><span style="color: #800000;">HTTP/1.1</span><span style="color: #800000;">"</span>, WINHTTP_NO_REFERER, lpszAcceptedType, <span style="color: #800080;">0</span><span style="color: #000000;">);
+    </span><span style="color: #0000ff;">if</span> (hRequest ==<span style="color: #000000;"> NULL)
+    {
+        </span><span style="color: #0000ff;">return</span><span style="color: #000000;">;
+    }
+    DWORD dwTime </span>= <span style="color: #800080;">5000</span><span style="color: #000000;">;
+    ::WinHttpSetOption(hRequest, WINHTTP_OPTION_CONNECT_TIMEOUT, </span>&amp;dwTime, <span style="color: #0000ff;">sizeof</span><span style="color: #000000;">(DWORD));
+    std::wstring strHeader </span>= L<span style="color: #800000;">"</span><span style="color: #800000;">Content-Type: multipart/form-data; boundary=--boundary_cswuygtest\r\n</span><span style="color: #800000;">"</span><span style="color: #000000;">;
+    ::WinHttpAddRequestHeaders(hRequest, strHeader.c_str(), strHeader.length(), WINHTTP_ADDREQ_FLAG_ADD </span>|<span style="color: #000000;"> WINHTTP_ADDREQ_FLAG_REPLACE);
+
+    std::</span><span style="color: #0000ff;">string</span> strMIME = <span style="color: #800000;">"</span><span style="color: #800000;">----boundary_cswuygtest\r\n</span><span style="color: #800000;">"</span><span style="color: #000000;">;
+    strMIME </span>+= <span style="color: #800000;">"</span><span style="color: #800000;">Content-Disposition: form-data; name=\"ufile01\"; filename=\"upload_test_http_cswuyg.txt\"\r\n</span><span style="color: #800000;">"</span><span style="color: #000000;">;
+    strMIME </span>+= <span style="color: #800000;">"</span><span style="color: #800000;">Content-Type:application/octet-stream\r\n\r\n</span><span style="color: #800000;">"</span><span style="color: #000000;">;
+    strMIME </span>+= <span style="color: #800000;">"</span><span style="color: #800000;">1\r\n</span><span style="color: #800000;">"</span><span style="color: #000000;">;
+    </span><span style="color: #808080;">///////////////////////////</span><span style="color: #008000;">//</span>
+    <span style="color: #008000;">//</span><span style="color: #008000;">除了这个表单之外，后头还必须要有另外的表单信息，否则hfs服务端那边无法写入文件，这里仅为测试。
+    </span><span style="color: #008000;">//</span><span style="color: #008000;">strMIME += "----boundary_cswuygtest\r\n" ;
+    </span><span style="color: #008000;">//</span><span style="color: #008000;">strMIME += "Content-Disposition: form-data; name=\"name\"\r\n\r\n";
+    </span><span style="color: #008000;">//</span><span style="color: #008000;">strMIME += "temp.txt\r\n";</span>
+    <span style="color: #808080;">////////////////////////</span><span style="color: #008000;">/</span>
+    strMIME += <span style="color: #800000;">"</span><span style="color: #800000;">----boundary_cswuygtest--\r\n</span><span style="color: #800000;">"</span><span style="color: #000000;">;
+    </span><span style="color: #808080;">////////////////////////</span><span style="color: #008000;">/</span>
+    <span style="color: #008000;">//</span><span style="color: #008000;">可以直接写入
+    </span><span style="color: #008000;">//</span><span style="color: #008000;">::WinHttpSendRequest(hRequest, strHeader.c_str(), strHeader.length(), (LPVOID)strMIME.c_str(), strMIME.length(), strMIME.length(), 0);
+
+    </span><span style="color: #008000;">//</span><span style="color: #008000;">也可以后面分步写入</span>
+    ::WinHttpSendRequest(hRequest, NULL, <span style="color: #800080;">0</span>, NULL, <span style="color: #800080;">0</span>, strMIME.length(), <span style="color: #800080;">0</span><span style="color: #000000;">);
+    DWORD dwWritten </span>= <span style="color: #800080;">0</span><span style="color: #000000;">;
+    </span><span style="color: #0000ff;">while</span>(!<span style="color: #000000;">strMIME.empty())
+    {
+        ::WinHttpWriteData(hRequest, strMIME.c_str(), strMIME.length(), </span>&amp;<span style="color: #000000;">dwWritten);
+        </span><span style="color: #0000ff;">if</span> (strMIME.length() &gt;<span style="color: #000000;"> dwWritten)
+        {
+            strMIME.substr(dwWritten);
+        }
+        </span><span style="color: #0000ff;">else</span><span style="color: #000000;">
+        {
+            strMIME </span>= <span style="color: #800000;">""</span><span style="color: #000000;">;
+        }
+        
+    }
+    ::WinHttpReceiveResponse(hRequest, NULL);
+
+    </span><span style="color: #0000ff;">char</span> buf[<span style="color: #800080;">1024</span>] = { <span style="color: #800080;">0</span><span style="color: #000000;"> };
+    DWORD dwToRead </span>= <span style="color: #800080;">1024</span><span style="color: #000000;">;
+    DWORD dwHaveRead </span>= <span style="color: #800080;">0</span><span style="color: #000000;">;
+    ::WinHttpReadData(hRequest, buf, dwToRead, </span>&amp;<span style="color: #000000;">dwHaveRead);
+    std::cout </span>&lt;&lt; buf &lt;&lt;<span style="color: #000000;"> std::endl;
+    ::WinHttpCloseHandle(hRequest);
+    ::WinHttpCloseHandle(hConnect);
+    ::WinHttpCloseHandle(hSession);
+}</span></pre>
+</div>
+</div>
+<div>&nbsp; &nbsp; <strong>&nbsp;<span style="color: #ff6600;">wireshark抓包</span></strong>：</div>
+<div>头域设置：</div>
+<div><img src="http://images.cnitblog.com/blog/104985/201307/11222151-e4713cf8a1b54689a3a60c692b413c99.jpg" alt="" /></div>
+<div>&nbsp; 表单设置：</div>
+<div><img src="http://images.cnitblog.com/blog/104985/201307/11222205-81ebd1a40d5343a49d350e51c618e1e4.jpg" alt="" /></div>
+<div>　
+<p style="background: gray; font-size: 18pt; color: #ffffff;">三、总结</p>
+</div>
+<div>&nbsp; &nbsp; &nbsp;这两个例子用hfs做服务器测试可以发现在上传文件夹中上传了文件，代码都很简单。测试过程中的最重要的是能尽快的反馈结果，所以能自己搭建一个http服务器很重要，hfs工具，非常简单便捷。</div>
+<div>　　POST表单最重要的是了解表单的格式。首先要在头域增加Content-Type说明，如：&ldquo;content-type:multipart/from-data; boundary=--cswuyg&rdquo;。然后http body填充的数据要以MIME格式上传，每部分数据的开头都是由&ldquo;--&rdquo;+boundary开始的，结尾以"--"+boundary+"--"结束。</div>
+<div>　　如果要上传文件，需要跟服务器约定好格式，譬如上边例子约定在content-Disposition中有filename键的则是上传文件信息，该片的content为文件数据，这应该是比较通用的约定。</div>
+<div>　　本文所在：<a id="Editor_Edit_hlEntryLink" title="view: 通过HTTP协议上传文件" href="http://www.cnblogs.com/cswuyg/p/3185164.html" target="_blank">http://www.cnblogs.com/cswuyg/p/3185164.html</a><span>&nbsp;</span></div>
+<div>&nbsp;</div>
+<div><span style="color: #ff6600;">附上部分资料</span>：</div>
+<div>
+<p>MIME:http://baike.baidu.com/view/160611.htm<br />MIME来源 ： Multipurpose Internet Mail Extensions 多用途互联网邮件扩展。服务器会将它们发送的多媒体数据的类型告诉浏览器，而通知手段就是说明该多媒体数据的MIME类型。<br />GZIP文件：application/x-gzip<br />任意的二进制数据：application/octet-stream.<br />普通文本：text/plain</p>
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+<div>
+<div>wireshark：</div>
+<div>MIME Multipart Media Encapsulation 代表使用表单上传的所有数据</div>
+<div>Encapsulated multipart part 代表表单中不同项的数据</div>
+<div>Boundary 用来隔开表单中不同部分的数据</div>
+<div>每部分数据的开头都是由&ldquo;--&rdquo;+boundary开始的。</div>
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+<div>如果使用wireshark抓包，而http使用的不是默认的80端口，那么需要抓TCP包，然后再强制Decode为http。</div>
+<div>&nbsp;</div>
+<div>HTTP协议的文档：</div>
+<div>
+<div><a href="http://www.ietf.org/rfc/rfc2616">http://www.ietf.org/rfc/rfc2616</a></div>
+<div>&nbsp;</div>
+<div>chroimumde breakpad_sender代码中也有post表单上传文件部分，只不过它是用WinInet写的。</div>
+<div>&nbsp;</div>
+<div>2015 补充上传文件时的抓包信息：</div>
+<div><img src="http://images2015.cnblogs.com/blog/104985/201512/104985-20151215181533881-678713808.jpg" alt="" /></div>
+
+
+
+
+
+
+
+
+
+
+
+
+</div></div><div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory"></div>
+<div id="EntryTag"></div>
+<div id="blog_post_info">
+</div>
+<div class="clear"></div>
+<div id="post_next_prev"></div>
+</div>
+
+
+	<div class="postDesc">posted on <span id="post-date">2013-07-11 22:43</span> <a href='http://www.cnblogs.com/cswuyg/'>烛秋</a> 阅读(<span id="post_view_count">...</span>) 评论(<span id="post_comment_count">...</span>)  <a href ="https://i.cnblogs.com/EditPosts.aspx?postid=3185164" rel="nofollow">编辑</a> <a href="#" onclick="AddToWz(3185164);return false;">收藏</a></div>
+</div>
+<script type="text/javascript">var allowComments=true,cb_blogId=69721,cb_entryId=3185164,cb_blogApp=currentBlogApp,cb_blogUserGuid='12345c99-f5ed-de11-ba8f-001cf0cd104b',cb_entryCreatedDate='2013/7/11 22:43:00';loadViewCount(cb_entryId);var cb_postType=1;</script>
+
+</div><a name="!comments"></a><div id="blog-comments-placeholder"></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id='comment_form' class='commentform'>
+<a name='commentform'></a>
+<div id='divCommentShow'></div>
+<div id='comment_nav'><span id='span_refresh_tips'></span><a href='javascript:void(0);' onclick='return RefreshCommentList();' id='lnk_RefreshComments' runat='server' clientidmode='Static'>刷新评论</a><a href='#' onclick='return RefreshPage();'>刷新页面</a><a href='#top'>返回顶部</a></div>
+<div id='comment_form_container'></div>
+<div class='ad_text_commentbox' id='ad_text_under_commentbox'></div>
+<div id='ad_t2'></div>
+<div id='opt_under_post'></div>
+<div id='cnblogs_c1' class='c_ad_block'></div>
+<div id='under_post_news'></div>
+<div id='cnblogs_c2' class='c_ad_block'></div>
+<div id='under_post_kb'></div>
+<div id='HistoryToday' class='c_ad_block'></div>
+<script type='text/javascript'>
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverAdT2();
+    deliverAdC1();
+    deliverAdC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);   
+</script>
+</div>
+
+
+		</div>
+	</div>
+	<!-- left ends -->
+	<!-- right starts -->
+	<div id="right">
+		<!-- 右侧工具部分 -->
+		<div id="right_content">
+	
+			
+<!--done-->
+<h2 class="listtitle">公告</h2>
+<div class="newsItem">
+	<div id="blog-news"></div><script type="text/javascript">loadBlogNews();</script>
+</div>
+
+	
+			<div id="calendar"><div id="blog-calendar" style="display:none"></div><script type="text/javascript">loadBlogDefaultCalendar();</script></div>
+			
+				<DIV id="leftcontentcontainer">
+					<div id="blog-sidecolumn"></div><script type="text/javascript">loadBlogSideColumn();</script>
+				</DIV>
+			
+		</div>
+		<!-- //右侧工具部分 -->
+		<div id="footer">
+			
+<!--done-->
+Copyright &copy;2017 烛秋
+		</div>
+	</div>
+	<!-- right ends -->
+	<div class="clear"></div>
+	
+</div>
+
+<!--PageEndHtml Block Begin-->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-42773047-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!--PageEndHtml Block End-->
+</body>
+</html>
