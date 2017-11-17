@@ -5,7 +5,7 @@
 #include <iostream>
 using namespace std;
 
-void debuf(char* msg) {
+void debug(char* msg) {
 	printf("%s::%d:%s\n", __func__,__LINE__,msg);
 }
 
