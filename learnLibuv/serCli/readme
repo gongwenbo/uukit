@@ -1,0 +1,2 @@
+这是利用libuv库实现简单的server和client通信，其中涉及了libuv的定时器，线程池，tcp的api。
+功能是client发送server，hello.txt 数据，让后由server返回给client端。
