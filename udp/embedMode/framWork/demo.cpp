@@ -15,7 +15,15 @@
 #define start_vf_record		3
 #define stop_vf_record		4
 #define	start_vf_photo		5
+
+
+
+
+
 #define stop_vf_photo		6
+
+
+#define modify_time			7
 #define MAX_MSG 10
 
 #include "./sock/sock.h"
@@ -26,6 +34,10 @@
 #include "./nmOsal/src/nmOsalQueue.h"
 #include "./nmOsal/inc/nmOsal.h"
 #include "./nmOsal/inc/nmOsalType.h"
+
+//business
+#include "./include/common.h"
+
 
 char gfile_name[50]="json.json";
 char push_url[200];
@@ -112,7 +124,7 @@ void* pullVideo(void *agrv){
 		continue;
 	}
 	cout<<"pullVideo start ,url:"<<r_msg.buf_msg<<endl;
-	//rtmp_start(r_msg.buf_msg);
+	rtmp_start(r_msg.buf_msg);
 	}
 }
 
@@ -224,6 +236,10 @@ int busiPhotoHandleStart(){
 	cout<<username_val<<endl;
 	cout<<uid_val<<endl;
 	cout<<"take photo"<<endl;
+	printf("start take phone");
+	
+	//sample_get_jpeg_snap();
+	
 	
 }
 
@@ -233,6 +249,15 @@ int busiPhotoHandleClose(){
 	//close photo....
 
 }
+
+//modify time 
+int busiMdityTime()
+{
+	printf("start busiModityTime\n");
+	return 0;
+
+}
+
 
 int CommondParse(struct form_cli from_commond)
 {
@@ -256,6 +281,9 @@ int CommondParse(struct form_cli from_commond)
 			break;
 		case stop_vf_photo:
 			busiPhotoHandleClose();
+			break;
+		case modify_time:
+			busiMdityTime();
 			break;
 		default :
 			cout<<"error:cmd"<<endl;
@@ -350,7 +378,7 @@ int main(int argc,char* argv[])
 	
 	cout<<"return main"<<endl;
 	while(1){
-		if(0!=q_vreceive(from_hQueue,1,0,&get_msg_from_cli,sizeof(struct form_cli),&from_ulLen));
+		if(0!=q_vreceive(from_hQueue,1,0,&get_msg_from_cli,sizeof(struct form_cli),&from_ulLen))
 			cout<<"q_vreceiveERROR!!4"<<endl;
 		CommondParse(get_msg_from_cli);
 		sleep(1);

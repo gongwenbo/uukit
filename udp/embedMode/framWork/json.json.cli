@@ -1,0 +1,22 @@
+{
+
+	"rtmp_url":{
+		"ip":"113.107.62.142",
+		"port":"1935",
+		"sn":"/live/4klive_stream",         
+		"mode":1          
+	},
+	"record":{
+		"filename":"local:filename"
+	
+	},
+		
+	"photo":{
+		"httpurl":"vtest.sewise.com:1001",
+		"username":"hongyu",
+		"uid":"123"
+	}
+
+}
+	
+

@@ -178,7 +178,7 @@ int hardware_init()
 		printf("Encoder init failed\n");
 		return -1;
 	}
-
+    sample_jpeg_init();
 	// Step.4 Bind
 	for (i = 0; i < FS_CHN_NUM; i++) {
 		if (chn[i].enable) {

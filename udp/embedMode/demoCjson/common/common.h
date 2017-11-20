@@ -78,7 +78,7 @@ struct chn_conf{
 	unsigned int index;//0 for main channel ,1 for second channel
 	unsigned int enable;
 	unsigned int bitRate;       //码率
-	int IBiasLvl;               //I帧比�?(-3~3)
+	int IBiasLvl;               //I帧比重(-3~3)
 	IMPFSChnAttr fs_chn_attr;
 	IMPCell framesource_chn;
 	IMPCell imp_encoder;
@@ -86,7 +86,7 @@ struct chn_conf{
 
 #define  CHN_NUM  ARRAY_SIZE(chn)
 
-int change_chn_param(encode_attr *e_attr);    //修改分辨�?
+int change_chn_param(encode_attr *e_attr);    //修改分辨率
 void reload_all_param(void);    //重载参数
 
 int sample_system_init();

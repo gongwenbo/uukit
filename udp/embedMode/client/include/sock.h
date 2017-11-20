@@ -22,6 +22,15 @@ typedef enum _live_cmd_type_en
 	CMD_STOP_REC,						//stop_vf_record
 	CMD_START_PHOTO,						//start_vf_photo
 	CMD_STOP_PHOTO,						//stop_vf_photo
+	CMD_SET_UTC,						//  SET UTC TIME  消息体 存
+
+	NETCMD_GET_DEVCFG_REQ	=	0x1001,
+	NETCMD_SET_DEVCFG_REQ	=	0x1002,
+	NETCMD_SET_DEVWIFI_REQ	=	0x1003,
+	
+	NETCMD_GET_DEVCFG_RESP	=	0x8001,
+	NETCMD_SET_DEVCFG_RESP	=	0x8002,
+	NETCMD_SET_DEVWIFI_RESP	=	0x8003,
 }LIVE_CMD_TYPE_EN;
 
 typedef struct _net_cmd_struct

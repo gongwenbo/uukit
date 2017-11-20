@@ -1,0 +1,8 @@
+obj目录是交叉编译的库
+教程:
+下载curl-7.44.0，解压并进入目录。
+ ./configure --prefix=$HOME/develop/crosstool-ng/x-tools/armxscalecurl --build=i686-pc-cygwin --host=arm-linux CC=arm-xscale-linux-gnueabi-gcc --enable-static
+make 
+make install
+
+prefix为生成lib,include存放的地址，build为本机，host为运行的目标平台，CC是编译器名称

@@ -5,7 +5,8 @@
 #define CMD_C "start_vf_record"		
 #define CMD_D "stop_vf_record"		
 #define	CMD_E "start_vf_photo"		
-#define CMD_F "stop_vf_photo"		
+#define CMD_F "stop_vf_photo"
+#define CMD_G "modify_time"		
 
 int ParseCommond(LIVE_CMD_TYPE_EN &em_comm,char*comm){
 	
@@ -32,6 +33,10 @@ int ParseCommond(LIVE_CMD_TYPE_EN &em_comm,char*comm){
 	else if(strcmp(comm,CMD_F)==0){
 		em_comm=CMD_STOP_PHOTO; 
 		return 0;
+	}
+	else if(strcmp(comm,CMD_G)==0){
+		em_comm=CMD_SET_UTC;
+		return 0;		
 	}
 	else return -1;	
 }
@@ -60,7 +65,7 @@ int main(int argc, char *argv[]) {
 	memset(send_msg,0,sizeof(NETCMD_t));
 	memset(reci_buf,0,sizeof(NETCMD_t));
 	
-	if(ParseCommond(reci_commond,argv[1])!=0){
+	if(ParseCommond(reci_commond,argv[2])!=0){
 		printf("ERROR:ParseCommond\n");
 		return -1;
 	}
@@ -68,12 +73,12 @@ int main(int argc, char *argv[]) {
 	printf ("reci_commond:%d",reci_commond);
 	send_msg->CMD=reci_commond;
 	
-	strncpy((char*)send_msg->cmdInfo,argv[2],strlen(argv[2]));
-	send_msg->cmdLen=8+strlen(argv[2]);
+	strncpy((char*)send_msg->cmdInfo,argv[1],strlen(argv[1]));
+	send_msg->cmdLen=8+strlen(argv[1]);
 	
 	initailSock(sockfd,hostname,portno,serveraddr);
 	
-	while(1){				
+				
 	if(sendData(sockfd,send_msg,serveraddr)!=0){
 		printf("error:sendData");
 	
@@ -86,7 +91,6 @@ int main(int argc, char *argv[]) {
 	
 	memset(reci_buf,0,sizeof(NETCMD_t));		
 	sleep(1);
-	}
 	
 	free(send_msg);
 	free(reci_buf);

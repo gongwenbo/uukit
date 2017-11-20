@@ -93,15 +93,13 @@ typedef enum resolution_type {
 } resolution_type_t;
 
 //vedio default value
-encode_attr encode_1080p = {
+encode_attr encode_720p = {
 	.width = 1920,
 	.height = 1080,
 	.outFrmRateNum = 25,
 	.bitRate = 3000,
 	.IBiasLvl = 2,
 };
-
-
 	
 int change_chn_param(encode_attr *e_attr)
 {
@@ -124,7 +122,6 @@ int change_chn_param(encode_attr *e_attr)
 	if(e_attr->IBiasLvl >= -3 || e_attr->IBiasLvl <= 3)
 		chn[0].IBiasLvl = e_attr->IBiasLvl;
 }
-
 
 int reload_encoder_init(encode_attr *change_attr)
 {
