@@ -1,1 +1,6 @@
-这是利用简单的c++程序,实现的lib,tcp客户端.
+这是libuv的简单测试，服务端：./ser  客户端：./cli
+
+客户端发送hello.txt    服务器接受；hello.txt
+
+ok!
+

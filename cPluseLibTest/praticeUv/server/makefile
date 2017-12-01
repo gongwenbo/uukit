@@ -1,4 +1,4 @@
-TARGET=out
+TARGET=ser
 CC=g++
 CFLAGS=-Wall -std=c++11 -g
 INC=-I./
