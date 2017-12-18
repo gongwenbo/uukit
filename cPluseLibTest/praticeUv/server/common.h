@@ -13,6 +13,14 @@
 #include "socket_uv.h"
 #include "log.h"
 
+//mysql head_file
+#include <mysql_connection.h>
+#include <cppconn/driver.h>
+#include <cppconn/exception.h>
+#include <cppconn/resultset.h>
+#include <cppconn/statement.h>
+
+
 extern uv_loop_t* loop;
 
 

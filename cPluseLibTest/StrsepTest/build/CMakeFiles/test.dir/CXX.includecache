@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/root/uukit/cPluseLibTest/StrsepTest/main.cpp
+test.h
+/root/uukit/cPluseLibTest/StrsepTest/test.h
+cstring
+-
+
+/root/uukit/cPluseLibTest/StrsepTest/test.h
+stdio.h
+-
+string.h
+-
+iostream
+-
+string
+-
+

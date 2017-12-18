@@ -1,0 +1,1 @@
+/root/uukit/cPluseLibTest/StrsepTest/build/CMakeFiles/test.dir
