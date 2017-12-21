@@ -1,0 +1,1 @@
+/root/uukit/CommonLibTest/StaticCast/build/CMakeFiles/test.dir

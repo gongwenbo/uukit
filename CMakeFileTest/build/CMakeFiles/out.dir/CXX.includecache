@@ -1,0 +1,32 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/root/uukit/CMakeFileTest/./Add/Add/add.h
+stdio.h
+-
+stdlib.h
+-
+
+/root/uukit/CMakeFileTest/test1.cpp
+stdlib.h
+-
+iostream
+-
+mysql_connection.h
+-
+cppconn/driver.h
+-
+cppconn/exception.h
+-
+cppconn/resultset.h
+-
+cppconn/statement.h
+-
+./Add/Add/add.h
+/root/uukit/CMakeFileTest/./Add/Add/add.h
+

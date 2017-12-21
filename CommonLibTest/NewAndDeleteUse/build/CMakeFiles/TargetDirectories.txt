@@ -1,0 +1,1 @@
+/root/uukit/CommonLibTest/NewAndDeleteUse/build/CMakeFiles/test.dir

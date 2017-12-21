@@ -1,0 +1,1 @@
+/usr/bin/c++       CMakeFiles/out.dir/test1.cpp.o  -o out  -L/root/uukit/CMakeFileTest/Add/Add -rdynamic -lmysqlcppconn -ladd -Wl,-rpath,/root/uukit/CMakeFileTest/Add/Add 

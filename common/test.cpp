@@ -1,4 +1,7 @@
-#include"common.h"
+#include "common.h"
+#include <iostream>
+#include <string>
+
 using namespace std;
 int main()
 {

@@ -1,0 +1,1 @@
+/root/uukit/DoorBell/build/CMakeFiles/test_hwsdkc.dir

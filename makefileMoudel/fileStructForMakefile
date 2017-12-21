@@ -1,0 +1,9 @@
+    |----lib
+           |----libdiv.a
+     |----include
+           |----div.h
+    |----main.cpp main.h
+    |----add.cpp add.h
+    |----sub.cpp sub.h
+    |----mul.cpp mul.h
+    |----Makefile

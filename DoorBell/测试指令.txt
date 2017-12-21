@@ -1,0 +1,13 @@
+http://120.76.140.84:5102/?act=getmorealmsinfo_bell&key=huawuiot&client_index=100&user_name=350817634@qq.com&user_pws=678630&user_lang=zh-cn&dev_id=HW-M11101C-00003199&dev_kin=0&timezone=8
+
+http://120.76.140.84:5100/?act=push_almsinfo&key=huawuiot&dev_index=37622&alms_type=kswitch_doorbellbtn
+
+
+http://120.76.140.84/tester/#
+
+
+http://120.76.140.84:5102/?act=getmorealmsinfo_bell&key=huawuiot&client_index=100&user_name=13902311860&user_pws=12345678&user_lang=zh-cn&dev_id=HW-M21102-00000070,HW-M21102-00000077&dev_vch=&dev_kin=0&dev_din=&dev_sys=&timezone=8
+
+http://120.76.140.84:5102/?act=getmorealmsinfo_bell&key=huawuiot&client_index=100&user_name=18718245096&user_pws=a12345&user_lang=zh-cn&dev_id=HW-M11101C-00003196&dev_vch=&dev_kin=0&dev_din=&dev_sys=&timezone=8
+
+

@@ -1,0 +1,42 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/root/uukit/CommonLibTest/NewAndDeleteUse/common.h
+boost/any.hpp
+-
+boost/array.hpp
+-
+boost/lexical_cast.hpp
+-
+boost/format.hpp
+-
+boost/tokenizer.hpp
+-
+boost/thread.hpp
+-
+boost/archive/text_oarchive.hpp
+-
+boost/archive/text_iarchive.hpp
+-
+boost/archive/xml_oarchive.hpp
+-
+boost/function.hpp
+-
+boost/shared_ptr.hpp
+-
+iostream
+-
+vector
+-
+string
+-
+
+/root/uukit/CommonLibTest/NewAndDeleteUse/main.cpp
+common.h
+/root/uukit/CommonLibTest/NewAndDeleteUse/common.h
+

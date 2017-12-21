@@ -1,0 +1,7 @@
+休眠唤醒服务器的设计
+g++ -o udp udp.cpp -lpthread -lhiredis -luv -lnmosal
+代码依赖，hiredis  libuv  以及nmosal(自己添加的库)
+
+
+
+

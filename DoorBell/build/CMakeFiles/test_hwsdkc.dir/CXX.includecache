@@ -1,0 +1,38 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../inc/const.h
+BaseTsd.h
+../inc/BaseTsd.h
+
+../inc/hwsdk.h
+hwsdkType.h
+../inc/hwsdkType.h
+const.h
+../inc/const.h
+
+../inc/hwsdkType.h
+
+../inc/test.h
+
+/root/uukit/DoorBell/test_hwsdk.cpp
+hwsdk.h
+/root/uukit/DoorBell/hwsdk.h
+hwsdkType.h
+/root/uukit/DoorBell/hwsdkType.h
+test.h
+/root/uukit/DoorBell/test.h
+iostream
+-
+cstring
+-
+stdio.h
+-
+stdlib.h
+-
+

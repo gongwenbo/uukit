@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/root/uukit/TestC++Perform/NewUse/test.cpp
+test.h
+/root/uukit/TestC++Perform/NewUse/test.h
+
+/root/uukit/TestC++Perform/NewUse/test.h
+iostream
+-
+string
+-
+stdlib.h
+-
+stdio.h
+-
+

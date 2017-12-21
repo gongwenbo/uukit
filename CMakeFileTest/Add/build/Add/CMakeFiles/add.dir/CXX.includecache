@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/root/uukit/cppMysql/CMakeFileTest/Add/Add/add.cpp
+add.h
+/root/uukit/cppMysql/CMakeFileTest/Add/Add/add.h
+
+/root/uukit/cppMysql/CMakeFileTest/Add/Add/add.h
+stdio.h
+-
+stdlib.h
+-
+

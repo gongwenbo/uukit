@@ -1,0 +1,3 @@
+1安装nkd-build
+2在当前目录执行ndk-build 会生成libs/armeabi/libhwsdkc.so 库文件
+3备注：估计第一次编译不通过，可以调整jin的Android.mk文件修改相关的源文件即可。

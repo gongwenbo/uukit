@@ -1,0 +1,1 @@
+/usr/bin/c++   -m32    CMakeFiles/test_hwsdkc.dir/test_hwsdk.cpp.o  -o test_hwsdkc  -L/root/uukit/DoorBell/lib -rdynamic -lhwsdkc -lcu -Wl,-rpath,/root/uukit/DoorBell/lib 
