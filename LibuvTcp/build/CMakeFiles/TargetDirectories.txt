@@ -1,0 +1,4 @@
+/root/TestUv/build/CMakeFiles/rebuild_cache.dir
+/root/TestUv/build/CMakeFiles/cli.dir
+/root/TestUv/build/CMakeFiles/edit_cache.dir
+/root/TestUv/build/CMakeFiles/ser.dir
