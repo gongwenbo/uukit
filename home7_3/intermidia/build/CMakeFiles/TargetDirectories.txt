@@ -1,0 +1,6 @@
+/root/uukit/home7_3/intermidia/build/CMakeFiles/rebuild_cache.dir
+/root/uukit/home7_3/intermidia/build/CMakeFiles/edit_cache.dir
+/root/uukit/home7_3/intermidia/build/CMakeFiles/media.dir
+/root/uukit/home7_3/intermidia/build/src/CMakeFiles/edit_cache.dir
+/root/uukit/home7_3/intermidia/build/src/CMakeFiles/rebuild_cache.dir
+/root/uukit/home7_3/intermidia/build/src/CMakeFiles/_media.dir

@@ -1,0 +1,38 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+.././inc/common.h
+string
+-
+map
+-
+iostream
+-
+list
+-
+vector
+-
+thread
+-
+memory
+-
+algorithm
+-
+sstream
+-
+
+.././src/media.h
+common.h
+.././src/common.h
+
+/root/uukit/home7_3/intermidia/main.cpp
+common.h
+/root/uukit/home7_3/intermidia/common.h
+media.h
+/root/uukit/home7_3/intermidia/media.h
+
