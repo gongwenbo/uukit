@@ -1,0 +1,6 @@
+/root/uukit/home7_3/thread_pool/build/CMakeFiles/edit_cache.dir
+/root/uukit/home7_3/thread_pool/build/CMakeFiles/rebuild_cache.dir
+/root/uukit/home7_3/thread_pool/build/CMakeFiles/thpool.dir
+/root/uukit/home7_3/thread_pool/build/src/CMakeFiles/edit_cache.dir
+/root/uukit/home7_3/thread_pool/build/src/CMakeFiles/rebuild_cache.dir
+/root/uukit/home7_3/thread_pool/build/src/CMakeFiles/threadpool.dir

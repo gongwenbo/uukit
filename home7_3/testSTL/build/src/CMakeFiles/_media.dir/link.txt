@@ -1,0 +1,2 @@
+/usr/bin/ar qc lib_media.a  CMakeFiles/_media.dir/stl.cpp.o
+/usr/bin/ranlib lib_media.a

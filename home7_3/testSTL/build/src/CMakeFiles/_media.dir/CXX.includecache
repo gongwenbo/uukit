@@ -1,0 +1,46 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+.././inc/common.h
+string
+-
+map
+-
+iostream
+-
+list
+-
+vector
+-
+thread
+-
+memory
+-
+algorithm
+-
+sstream
+-
+chrono
+-
+deque
+-
+set
+-
+queue
+-
+stack
+-
+
+/root/uukit/home7_3/testSTL/src/stl.cpp
+stl.h
+/root/uukit/home7_3/testSTL/src/stl.h
+
+/root/uukit/home7_3/testSTL/src/stl.h
+common.h
+/root/uukit/home7_3/testSTL/src/common.h
+
